@@ -1,6 +1,11 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import {
   Pagination,
@@ -15,11 +20,23 @@ import { cn } from "@/lib/utils";
 import CircleDotIcon from "@/svgs/circleDot";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { format } from "date-fns";
-import { EllipsisVerticalIcon, PinIcon, SquareArrowOutUpRightIcon } from "lucide-react";
+import {
+  EllipsisVerticalIcon,
+  PinIcon,
+  SquareArrowOutUpRightIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 const Home = () => {
+  const [query, setQuery] = useState("");
   const [workflows, setWorkflows] = useState(mockWorkFlows);
+
+  const filteredWorkflows = workflows.filter(
+    (workflow) =>
+      workflow.name.toLowerCase().includes(query.toLowerCase()) ||
+      workflow.id.toString().includes(query.toLowerCase()),
+  );
 
   return (
     <div className="bg-[#FDFBF6] w-full h-full p-7 flex flex-col gap-6 overflow-hidden">
@@ -28,6 +45,8 @@ const Home = () => {
         <div className="relative w-full max-w-sm">
           <input
             type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className="text-xs py-2 px-3 pr-8 bg-white rounded border border-gray-200 focus:outline-[#88CAD1] w-full"
             placeholder="Search By Workflow Name/ID"
           />
@@ -39,7 +58,11 @@ const Home = () => {
         </button>
       </div>
       <div className="flex w-full h-full bg-white p-6 flex-col gap-6 overflow-auto">
-        <Accordion type="single" collapsible  className="w-full text-gray-600 text-sm">
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full text-gray-600 text-sm"
+        >
           <div className="grid grid-cols-12 text-sm font-medium text-black leading-[150%] border-b border-orange-400">
             <div className="col-span-3 pb-2 px-6">Workflow name</div>
             <div className="pb-2 px-6">ID</div>
@@ -47,9 +70,9 @@ const Home = () => {
             <div className="col-span-3 pb-2 px-6">Description</div>
             <div className="col-span-3 pb-2 px-6"></div>
           </div>
-          {workflows.map((workflow) => (
-            <AccordionItem 
-            value={workflow.id}
+          {filteredWorkflows.map((workflow) => (
+            <AccordionItem
+              value={workflow.id}
               key={workflow.id}
               className="grid grid-cols-12 border-b border-orange-50"
             >
@@ -77,37 +100,59 @@ const Home = () => {
                     setWorkflows(updatedWorkflows);
                   }}
                 >
-                    <PinIcon className={cn("size-5 shrink-0 text-gray-800 cursor-pointer", workflow.isPinned?"fill-[#FBDC00]":"")} />
+                  <PinIcon
+                    className={cn(
+                      "size-5 shrink-0 text-gray-800 cursor-pointer",
+                      workflow.isPinned ? "fill-[#FBDC00]" : "",
+                    )}
+                  />
                 </button>
                 <button className="text-gray-800 bg-white px-3 py-2 border rounded-md border-gray-200 hover:bg-gray-50">
                   Execute
                 </button>
-                <button className="text-gray-800 bg-white px-3 py-2 border rounded-md border-gray-200 hover:bg-gray-50">
+                <Link
+                  href={`/${workflow.id}`}
+                  className="text-gray-800 bg-white px-3 py-2 border rounded-md border-gray-200 hover:bg-gray-50"
+                >
                   Edit
-                </button>
+                </Link>
                 <EllipsisVerticalIcon className="size-4 shrink-0 text-white" />
                 <AccordionTrigger />
               </div>
               <div className="col-span-12">
-
-              <AccordionContent  className={"w-full px-9 py-6 bg-[#FFFAF2] flex flex-col gap-y-9 text-black"}>
-                {workflow.tests.map((test) => (
-                  <div key={`test-${test.id}-${workflow.id}`} className="flex items-center gap-4 relative">
-                    <div className="absolute w-0.5 h-14 top-1/2 left-[7px] bg-[#FFE1D2] shrink-0"></div>
-                    <CircleDotIcon />
-                    {/* 28/05 - 22:43 IST */}
-                    <span>
-                      {format(new Date(test.createdAt), "dd/MM - hh:mm a 'IST'")}
-                    </span>
-                    <Badge variant={"secondary"} className={cn("text-gray-800 font-normal",test.success ? "bg-[#DDEBC0]" : "bg-[#F8AEA8]")}>
-                      {test.success ? "Passed" : "Failed"}
-                    </Badge>
-                    <SquareArrowOutUpRightIcon className="size-4 shrink-0 cursor-pointer" />
-                  </div>
-                ))}
-              </AccordionContent>
+                <AccordionContent
+                  className={
+                    "w-full px-9 py-6 bg-[#FFFAF2] flex flex-col gap-y-9 text-black"
+                  }
+                >
+                  {workflow.tests.map((test) => (
+                    <div
+                      key={`test-${test.id}-${workflow.id}`}
+                      className="flex items-center gap-4 relative"
+                    >
+                      <div className="absolute w-0.5 h-14 top-1/2 left-[7px] bg-[#FFE1D2] shrink-0"></div>
+                      <CircleDotIcon />
+                      {/* 28/05 - 22:43 IST */}
+                      <span>
+                        {format(
+                          new Date(test.createdAt),
+                          "dd/MM - hh:mm a 'IST'",
+                        )}
+                      </span>
+                      <Badge
+                        variant={"secondary"}
+                        className={cn(
+                          "text-gray-800 font-normal",
+                          test.success ? "bg-[#DDEBC0]" : "bg-[#F8AEA8]",
+                        )}
+                      >
+                        {test.success ? "Passed" : "Failed"}
+                      </Badge>
+                      <SquareArrowOutUpRightIcon className="size-4 shrink-0 cursor-pointer" />
+                    </div>
+                  ))}
+                </AccordionContent>
               </div>
-
             </AccordionItem>
           ))}
         </Accordion>
@@ -118,15 +163,23 @@ const Home = () => {
                 <PaginationPrevious href="#" className={"hover:bg-orange-50"} />
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#" className={"hover:bg-orange-50"}>1</PaginationLink>
+                <PaginationLink
+                  href="#"
+                  isActive
+                  className={"bg-orange-50 hover:bg-orange-50"}
+                >
+                  1
+                </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#" isActive className={"bg-orange-50 hover:bg-orange-50"}>
+                <PaginationLink href="#" className={"hover:bg-orange-50"}>
                   2
                 </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#" className={"hover:bg-orange-50"}>3</PaginationLink>
+                <PaginationLink href="#" className={"hover:bg-orange-50"}>
+                  3
+                </PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationEllipsis />
