@@ -1,5 +1,6 @@
 "use client";
 
+import useHighbridgeStore from "@/store";
 import AppleIcon from "@/svgs/apple";
 import FacebookIcon from "@/svgs/facebook";
 import GoogleIcon from "@/svgs/google";
@@ -7,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 const Login = () => {
+  const dispatch = useHighbridgeStore((state) => state.dispatch);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -17,6 +19,12 @@ const Login = () => {
     e.preventDefault();
     // Handle login logic here
     console.log("Form submitted:", form);
+    dispatch({
+      type: "SET_STATE",
+      payload: {
+        user: { ...form },
+      },
+    });
   };
 
   return (
