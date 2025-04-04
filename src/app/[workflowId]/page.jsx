@@ -2,6 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   addEdge,
   Background,
   Controls,
@@ -13,7 +22,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { SaveIcon } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { use, useCallback, useMemo, useState } from "react";
 import CustomEdge from "./CustomEdge";
 import CustomNode from "./CustomNode";
 import NodeDialog from "./NodeDialog";
@@ -43,7 +52,8 @@ const nodeTypes = {
   custom: CustomNode,
 };
 
-export default function WorkflowEditor() {
+export default function WorkflowEditor({ params }) {
+  const { workflowId } = use(params);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newNodeData, setNewNodeData] = useState(null);
@@ -222,8 +232,61 @@ export default function WorkflowEditor() {
             <Button asChild className={"underline"} variant={"ghost"}>
               <Link href={"/"}>&lt; - Go Back</Link>
             </Button>
-            <span>Untitled</span>
-            <SaveIcon className="size-4 shrink-0 fill-[#FBDC00]" />
+            <span>{decodeURIComponent(workflowId)}</span>
+            <Dialog>
+              <DialogTrigger asChild>
+                <SaveIcon className="size-5 shrink-0 fill-[#FBDC00] cursor-pointer" />
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl flex flex-col justify-between gap-6">
+                <DialogHeader className={""}>
+                  <DialogTitle>Save your workflow</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="name" className="font-normal text-gray-600">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    defaultValue={decodeURIComponent(workflowId)}
+                    placeholder="Name here..."
+                    className="w-full bg-white border border-gray-200 p-3 text-base rounded-md placeholder:text-gray-300"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="description"
+                    className="font-normal text-gray-600"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    type="text"
+                    name="description"
+                    id="description"
+                    placeholder="Write here..."
+                    className="w-full bg-white border border-gray-200 p-3 text-base rounded-md placeholder:text-gray-300"
+                  />
+                </div>
+                <DialogFooter
+                  className={
+                    "border-t w-full border-gray-200 pt-4 flex justify-end items-center gap-4"
+                  }
+                >
+                  <DialogClose asChild>
+                    <Button
+                      variant="outline"
+                      className={
+                        "bg-[#EE3425] text-white hover:bg-[#EE3425] hover:text-white"
+                      }
+                    >
+                      Save
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </Panel>
       </ReactFlow>
