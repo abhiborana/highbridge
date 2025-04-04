@@ -29,7 +29,7 @@ const Login = () => {
 
   return (
     <div className="h-full w-full bg-[url('/bg-img.png')] bg-cover bg-center bg-no-repeat">
-      <div className="w-full h-full bg-gradient-to-bl from-[#42424223] to-[#212121] flex justify-center items-end">
+      <div className="w-full h-full bg-gradient-to-bl from-[#42424223] to-[#212121] flex justify-center items-center">
         <div className="max-w-5xl flex justify-between w-full h-full items-center">
           <div className="flex flex-col w-2/5 h-3/5 justify-between text-white pt-20">
             <img
@@ -47,7 +47,7 @@ const Login = () => {
           </div>
           <form
             onSubmit={handleSubmit}
-            className="w-2/5 h-4/5 bg-gray-50 rounded-t-3xl p-10 mt-auto flex flex-col gap-5 text-sm"
+            className="w-2/5 bg-gray-50 rounded-t-3xl p-10 mt-auto flex flex-col gap-5 text-sm"
           >
             <div>
               <p className="font-medium leading-5">WELCOME BACK!</p>
